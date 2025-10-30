@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Analisador de Milhares - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: linear-gradient(180deg,#060606,#0b0b0d); color:#ffecec; }
+    .card { background: linear-gradient(180deg, rgba(20,20,20,0.85), rgba(10,10,10,0.6)); border: 1px solid rgba(255,0,0,0.06); }
+    .table-head { background: rgba(255,0,0,0.06); }
+    .small-muted { color: #9ca3af; font-size: .9rem; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex items-start justify-center py-10 px-4">
+  <div class="w-full max-w-5xl">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-red-400">🔥 Analisador de Milhares — Dashboard</h1>
+      <p class="small-muted mt-1">Envie PDF escaneado ou imagem. O sistema extrai milhares (4 dígitos), divide em centena e dezena e conta repetições.</p>
+    </header>
+
+    <section class="card p-6 rounded-2xl shadow-lg">
+      <form action="{{ url_for('analisar') }}" method="post" enctype="multipart/form-data" class="flex flex-col md:flex-row gap-4 items-center">
+        <div class="flex-1">
+          <input name="arquivo" type="file" accept=".pdf,.png,.jpg,.jpeg" required
+                 class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+                 file:text-sm file:font-semibold file:bg-red-500 file:text-black" />
+        </div>
+        <div class="flex gap-3">
+          <button type="submit" class="px-5 py-2 rounded-full font-semibold bg-red-500/90 text-black">🔎 Analisar</button>
+          <a href="/" class="px-4 py-2 rounded-full border border-gray-700 text-sm small-muted">Limpar</a>
+        </div>
+      </form>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mt-4">
+          {% for msg in messages %}
+            <div class="p-3 mt-2 rounded-md bg-red-900/40 text-red-200">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if resultado %}
+    <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="card p-4 rounded-xl">
+        <h2 class="text-lg font-bold text-red-300">🏆 Milhares</h2>
+        <p class="small-muted mb-3">Arquivo: {{ resultado.arquivo }}</p>
+        <div class="overflow-auto max-h-64">
+          <table class="min-w-full text-left">
+            <thead class="table-head sticky top-0">
+              <tr><th class="px-2 py-2">Milhar</th><th class="px-2 py-2">Repetições</th></tr>
+            </thead>
+            <tbody>
+              {% for num,qtd in resultado.milhares %}
+                <tr class="{% if loop.index0 % 2 == 0 %}bg-slate-900/30{% endif %}">
+                  <td class="px-2 py-1 mono">{{ num }}</td>
+                  <td class="px-2 py-1 font-semibold text-red-200">{{ qtd }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-xl">
+        <h2 class="text-lg font-bold text-yellow-300">🎯 Centenas</h2>
+        <div class="overflow-auto max-h-64">
+          <table class="min-w-full text-left">
+            <thead class="table-head sticky top-0">
+              <tr><th class="px-2 py-2">Centena</th><th class="px-2 py-2">Repetições</th></tr>
+            </thead>
+            <tbody>
+              {% for num,qtd in resultado.centenas %}
+                <tr class="{% if loop.index0 % 2 == 0 %}bg-slate-900/30{% endif %}">
+                  <td class="px-2 py-1 mono">{{ num }}</td>
+                  <td class="px-2 py-1 font-semibold text-yellow-200">{{ qtd }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card p-4 rounded-xl">
+        <h2 class="text-lg font-bold text-orange-300">🔢 Dezenas</h2>
+        <div class="overflow-auto max-h-64">
+          <table class="min-w-full text-left">
+            <thead class="table-head sticky top-0">
+              <tr><th class="px-2 py-2">Dezena</th><th class="px-2 py-2">Repetições</th></tr>
+            </thead>
+            <tbody>
+              {% for num,qtd in resultado.dezenas %}
+                <tr class="{% if loop.index0 % 2 == 0 %}bg-slate-900/30{% endif %}">
+                  <td class="px-2 py-1 mono">{{ num }}</td>
+                  <td class="px-2 py-1 font-semibold text-orange-200">{{ qtd }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-6 flex gap-3">
+      <a href="{{ url_for('baixar', key=resultado.key) }}" class="px-4 py-2 rounded-full bg-red-500 text-black font-semibold">⬇️ Baixar CSV</a>
+      <a href="/" class="px-4 py-2 rounded-full border border-gray-700 text-sm small-muted">Nova análise</a>
+    </section>
+    {% endif %}
+
+    <footer class="mt-10 small-muted text-center">
+      Desenvolvido pra você — roda localmente ou em hospedagem. Se o OCR estiver fraco, experimente aumentar resolução das imagens.
+    </footer>
+  </div>
+</body>
+</html>

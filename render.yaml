@@ -2,9 +2,7 @@ services:
   - type: web
     name: analisador-milhar
     env: python
-    buildCommand: pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+    buildCommand: |
+      apt-get update && apt-get install -y poppler-utils
+      pip install -r requirements.txt
     startCommand: gunicorn app:app
-    plan: free
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.14

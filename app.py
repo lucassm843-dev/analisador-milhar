@@ -1,4 +1,16 @@
 import os
+import pytesseract
+
+# 🔧 Força o caminho absoluto do Tesseract no ambiente Linux (Render)
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+# Apenas para debug — opcional
+if not os.path.exists(pytesseract.pytesseract.tesseract_cmd):
+    print("⚠️ Caminho do Tesseract não encontrado:", pytesseract.pytesseract.tesseract_cmd)
+else:
+    print("✅ Tesseract encontrado em:", pytesseract.pytesseract.tesseract_cmd)
+
+import os
 import re
 import io
 from collections import Counter

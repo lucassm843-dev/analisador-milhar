@@ -13,6 +13,9 @@ from datetime import datetime
 UPLOAD_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg'}
 MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50 MB
 
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+
+
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET", "trocar_para_valor_secreto")

@@ -1,6 +1,13 @@
 import os
 import pytesseract
 
+# tenta localizar o binário do tesseract automaticamente
+pytesseract_path = shutil.which("tesseract")
+if not pytesseract_path:
+    raise EnvironmentError("Tesseract não encontrado no PATH do sistema.")
+pytesseract.pytesseract.tesseract_cmd = pytesseract_path
+print("✅ Tesseract localizado em:", pytesseract_path)
+
 # 🔧 Força o caminho absoluto do Tesseract no ambiente Linux (Render)
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
